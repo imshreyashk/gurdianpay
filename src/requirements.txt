@@ -1,0 +1,8 @@
+fastapi 
+uvicorn 
+mlflow 
+feast 
+pandas 
+xgboost 
+streamlit 
+requests 

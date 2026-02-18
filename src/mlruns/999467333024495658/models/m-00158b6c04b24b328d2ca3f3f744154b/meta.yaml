@@ -1,0 +1,10 @@
+artifact_location: file:///E:\gurdianpay\src/mlruns/999467333024495658/models/m-00158b6c04b24b328d2ca3f3f744154b/artifacts
+creation_timestamp: 1771406598341
+experiment_id: '999467333024495658'
+last_updated_timestamp: 1771406621757
+model_id: m-00158b6c04b24b328d2ca3f3f744154b
+model_type: null
+name: fraud_model_v1
+source_run_id: 06a331b57eab4ec18a9e7f975b41e289
+status: 2
+status_message: null

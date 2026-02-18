@@ -1,0 +1,14 @@
+artifact_uri: file:///E:\gurdianpay\src/mlruns/999467333024495658/06a331b57eab4ec18a9e7f975b41e289/artifacts
+end_time: 1771406621794
+entry_point_name: ''
+experiment_id: '999467333024495658'
+lifecycle_stage: active
+run_id: 06a331b57eab4ec18a9e7f975b41e289
+run_name: spiffy-cow-662
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771406597934
+status: 3
+tags: []
+user_id: user
