@@ -6,6 +6,8 @@ import pandas as pd
 import os
 import pathlib
 
+print("🔥 Pipeline version 2.0 starting...")
+
 app = FastAPI(title="GuardianPay Fraud Detection API")
 
 # 1. PATH FIX: Use pathlib for cross-platform compatibility (Windows/Linux)
