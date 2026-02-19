@@ -53,3 +53,13 @@ jobs:
         run: |
           docker tag src-backend:latest ${{ secrets.DOCKER_USERNAME }}/guardian-backend:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/guardian-backend:latest
+
+deploy:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Cloud
+        run: |
+          echo "🚀 Deploying latest Docker image to production..."
+          # Example: Triggering a Render/Railway deploy via Webhook
+          # curl -X POST ${{ secrets.DEPLOY_HOOK_URL }}
