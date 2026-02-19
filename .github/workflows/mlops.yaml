@@ -22,7 +22,10 @@ jobs:
         run: pip install -r src/requirements.txt
 
       - name: Run Unit Tests
-        run: pytest tests/  # Ensures your API isn't broken
+        working-directory: ./src   # Ensure it's in the folder where the code is
+        run: |
+          pip install pytest pytest-asyncio httpx  # Install test tools explicitly
+          python -m pytest tests/
 
   build-and-deploy:
     needs: quality-control  # Only runs if the tests pass
