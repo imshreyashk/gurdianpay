@@ -25,13 +25,11 @@ jobs:
 
       - name: Run Unit Tests
         working-directory: ./src
-        env:
-          # NEW: Tells MLflow where the local database is
-          MLFLOW_TRACKING_URI: sqlite:///mlflow.db
+        - name: Run Unit Tests
+        working-directory: ./src
         run: |
           pip install pytest pytest-asyncio httpx
-          # NEW: Adds the current directory (.) to the Python path so tests find main.py
-          export PYTHONPATH=$PYTHONPATH:.
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
           python -m pytest tests/
 
   build-and-deploy:

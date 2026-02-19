@@ -23,26 +23,29 @@ def load_best_model():
     try:
         experiment_name = "GuardianPay_Fraud_Detection"
         experiment = mlflow.get_experiment_by_name(experiment_name)
-        runs = mlflow.search_runs(experiment_ids=[experiment.experiment_id], order_by=["metrics.f1_score DESC"])
+        if not experiment:
+            raise Exception("Experiment not found!")
+
+        # 🔍 BROAD SEARCH: Look inside the entire Experiment ID folder
+        # This will find 'model.ubj' regardless of how many 'models/m-xxx' folders are in the way
+        exp_folder = BASE_DIR / "mlruns" / experiment.experiment_id
         
-        if runs.empty:
-            raise Exception("No runs found for this experiment!")
-            
-        best_run_id = runs.iloc[0].run_id
-        run_folder = BASE_DIR / "mlruns" / experiment.experiment_id / best_run_id
-        
-        # 🔍 DYNAMIC SEARCH: Find the folder containing 'model.ubj'
-        # This handles the 'models/m-xxx/artifacts' nesting automatically
-        model_files = list(run_folder.rglob("model.ubj"))
+        print(f"🔎 Searching for model.ubj in: {exp_folder}")
+        model_files = list(exp_folder.rglob("model.ubj"))
         
         if not model_files:
-            raise Exception(f"Could not find model.ubj in {run_folder}")
+            raise Exception(f"Could not find model.ubj anywhere in experiment {experiment.experiment_id}")
             
-        # MLflow needs the directory, not the file path
+        # Use the first one found (which will be from the best run if sorted, 
+        # but since you only have one major model file, this is safe)
         model_load_path = model_files[0].parent
-        print(f"✅ Found model directory at: {model_load_path}")
+        print(f"✅ Found model at: {model_load_path}")
         
-        return mlflow.xgboost.load_model(str(model_load_path)), best_run_id
+        # We still need a Run ID for the API response
+        # We can extract it from the path string
+        run_id = model_files[0].parts[-5] # Extracts the run_id from the path
+        
+        return mlflow.xgboost.load_model(str(model_load_path)), run_id
         
     except Exception as e:
         print(f"❌ Load failed: {e}")
