@@ -23,37 +23,30 @@ def load_best_model():
     try:
         experiment_name = "GuardianPay_Fraud_Detection"
         experiment = mlflow.get_experiment_by_name(experiment_name)
-        
-        if not experiment:
-            raise Exception(f"Experiment {experiment_name} not found!")
-
-        runs = mlflow.search_runs(
-            experiment_ids=[experiment.experiment_id], 
-            order_by=["metrics.f1_score DESC"]
-        )
+        runs = mlflow.search_runs(experiment_ids=[experiment.experiment_id], order_by=["metrics.f1_score DESC"])
         
         if runs.empty:
-            raise Exception("No runs found in MLflow!")
-
+            raise Exception("No runs found for this experiment!")
+            
         best_run_id = runs.iloc[0].run_id
+        run_folder = BASE_DIR / "mlruns" / experiment.experiment_id / best_run_id
         
-        # 2. DYNAMIC ARTIFACT LOADING: 
-        # Instead of hardcoding 'fraud_model_v1', we point to the run directly.
-        # MLflow will find the booster file (model.ubj) automatically.
-        model_uri = f"runs:/{best_run_id}/models/m-00158b6c04b24b328d2ca3f3f744154b/artifacts"
+        # 🔍 DYNAMIC SEARCH: Find the folder containing 'model.ubj'
+        # This handles the 'models/m-xxx/artifacts' nesting automatically
+        model_files = list(run_folder.rglob("model.ubj"))
         
-        # If the above fails, MLflow's standard run URI is safer:
-        model_uri_standard = f"runs:/{best_run_id}/fraud_model_v1"
+        if not model_files:
+            raise Exception(f"Could not find model.ubj in {run_folder}")
+            
+        # MLflow needs the directory, not the file path
+        model_load_path = model_files[0].parent
+        print(f"✅ Found model directory at: {model_load_path}")
         
-        print(f"🚀 Attempting to load model from Run ID: {best_run_id}")
-        return mlflow.xgboost.load_model(model_uri_standard), best_run_id
-
+        return mlflow.xgboost.load_model(str(model_load_path)), best_run_id
+        
     except Exception as e:
-        print(f"⚠️ Initial load failed, trying absolute fallback...")
-        # Fallback for the specific path seen in your GitHub error logs
-        fallback_path = MLRUNS_DIR / "999467333024495658" / "06a331b57eab4ec18a9e7f975b41e289" / "artifacts" / "model.ubj"
-        return mlflow.xgboost.load_model(str(fallback_path)), "fallback_id"
-
+        print(f"❌ Load failed: {e}")
+        raise e
 model, best_run_id = load_best_model()
 
 @app.get("/")
